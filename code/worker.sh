@@ -3,6 +3,7 @@
 # verbose output
 set -x
 
+
 URL=$(cat $1 | head -n 1)
 echo $URL
 
