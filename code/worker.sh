@@ -37,7 +37,7 @@ if [ x"${URL:0:22}" == x"https://api.github.com" ] || [ x"${GHURL:0:22}" == x"ht
     URL=$(wget -q "$GHURL" -O - | grep browser_download_url | grep -i AppImage | grep -v 'AppImage\.' | head -n 1 | cut -d '"' -f 4) # No 64-bit one found, trying any; TODO: Handle more than one AppImage per release
   fi
   if [ x"" == x"$URL" ] ; then
-    echo "$(wget -q "$GHURL" -O -)"
+    echo "$(wget -q "$GHURL")"
     echo "$(wget -q "$GHURL" -O - | grep browser_download_url)"
     echo "$(wget -q "$GHURL" -O - | grep browser_download_url | grep -i AppImage)"
     echo "$(wget -q "$GHURL" -O - | grep browser_download_url | grep -i AppImage | grep -v 'AppImage\.')"
