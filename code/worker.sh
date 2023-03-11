@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # verbose output
-set -v
+set -x
 
 URL=$(cat $1 | head -n 1)
 echo $URL
