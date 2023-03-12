@@ -1,13 +1,11 @@
 on:
   push:
-    branches:
-      # Do not build PRs twice
-      - 'master'
     # The ignored paths must not include md files for the website itself
     paths-ignore:
     - '*.md'
     - '.github/workflows/**'
-    - 'code/**'
+    - 'code/worker.py'
+    - 'code/prep-dummy-soundcard.sh'
   pull_request:
     paths-ignore:
     - '*.md'
@@ -42,7 +40,7 @@ jobs:
         sudo npm install -g asar # to get pacakges.json from resources/app.asar for electron-builder applications
         # npm install -g @alexlafroscia/yaml-merge # to merge yaml files
     - name: Main test
-      # shell: bash
+      shell: bash
       run: |
         # set -e
         mkdir $HOME/.icewm/
@@ -59,12 +57,19 @@ jobs:
         # until xset -q; do echo "Waiting for X server to start..."; sleep 1; done # We are not immediately using it anyway
         # Find out which files in data/ have been changed in the last commit
         #set -x    # Debug #379
-        FILES=$(git log -1 -p data/ | grep +++ | cut -d '/' -f 2-| sed -e 's|dev/null||g')
+        FILES=$(git show | grep b/data | cut -d' ' -f4 | sed -e 's|b/||g' -e '/^[[:space:]]*$/d')
         echo "Last changed files from the FILES variable:"
         echo "$FILES" ; if [ -z "$FILES" ] ; then echo "Variable FILES is empty." && exit 1 ; fi
         # Work on these files that have been changed in the last commit
         # Check if $FILES is not empty
-        if [ -n "$FILES" ] ; then for FILE in $FILES ; do echo "$FILE" ; bash -e code/worker.sh $(readlink -f "$FILE") 2>&1 | tee log.txt ; done ; fi
+        if [ -n "$FILES" ]
+        then 
+          for FILE in $FILES
+          do
+            echo "$FILE"
+            ./code/worker.sh $(readlink -f "$FILE") 2>&1 | tee log.txt
+          done
+        fi
         # xpra stop :99
         killall Xvfb
         # bundle exec jekyll build # https://help.github.com/en/articles/viewing-jekyll-build-error-messages#configuring-a-third-party-service-to-display-jekyll-build-error-messages
