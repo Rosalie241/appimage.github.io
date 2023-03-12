@@ -32,7 +32,7 @@ if [ x"${URL:0:22}" == x"https://api.github.com" ] || [ x"${GHURL:0:22}" == x"ht
     GHURL="$URL"
   fi
   echo "GitHub API URL detected"
-  API_JSON="$(wget --header "Accept: application/vnd.github+json" --header "Authorization: Bearer $GH_TOKEN" --header "X-GitHub-Api-Version: 2022-11-28" "$GHURL")"
+  API_JSON="$(wget -O - --header "Accept: application/vnd.github+json" --header "Authorization: Bearer $GH_TOKEN" --header "X-GitHub-Api-Version: 2022-11-28" "$GHURL")"
   URL=$(echo "$API_JSON" | grep browser_download_url | grep -i AppImage | grep -v 'AppImage\.' | grep -ie 'amd.\?64\|x86.64\|x64\|linux.\?64' | head -n 1 | cut -d '"' -f 4) # TODO: Handle more than one AppImage per release
   if [ x"" == x"$URL" ] ; then
     URL=$(echo "$API_JSON"| grep browser_download_url | grep -i AppImage | grep -v 'AppImage\.' | head -n 1 | cut -d '"' -f 4) # No 64-bit one found, trying any; TODO: Handle more than one AppImage per release
